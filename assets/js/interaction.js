@@ -111,27 +111,35 @@ AFRAME.registerComponent('gesture-handler', {
 });
 
 // KOMPONEN 3: Info Click Handler
-// Menampilkan Popup saat model diklik
+// Menampilkan Popup saat model diklik dengan konten dinamis
 AFRAME.registerComponent('info-click-handler', {
+  schema: {
+    title: { type: 'string', default: 'Informasi' },
+    text: { type: 'string', default: 'Tidak ada deskripsi tersedia.' }
+  },
   init: function () {
     const el = this.el;
+    const data = this.data;
     
     el.addEventListener('click', function () {
       const infoPanel = document.getElementById('info-panel');
-      // Toggle visibilitas
-      if (infoPanel.style.display === 'none' || infoPanel.style.display === '') {
-        infoPanel.style.display = 'flex'; // Tampilkan dengan Flexbox
-      } else {
-        infoPanel.style.display = 'none';
-      }
+      const infoTitle = document.getElementById('info-title');
+      const infoText = document.getElementById('info-text');
+
+      // Update konten teks berdasarkan properti komponen
+      if (infoTitle) infoTitle.textContent = data.title;
+      if (infoText) infoText.textContent = data.text;
+
+      // Tampilkan panel
+      infoPanel.style.display = 'flex';
     });
 
-    // Cursor visual feedback (Opsional: membesar sedikit saat di-hover/di-aim)
+    // Cursor visual feedback
     el.addEventListener('mouseenter', function () {
       el.object3D.scale.multiplyScalar(1.1);
     });
     el.addEventListener('mouseleave', function () {
-      el.object3D.scale.multiplyScalar(0.909); // Kembalikan ke ukuran semula (1/1.1)
+      el.object3D.scale.multiplyScalar(0.909); 
     });
   }
 });

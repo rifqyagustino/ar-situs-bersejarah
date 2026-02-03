@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR Situs Bersejarah - Candi Borobudur</title>
+    <title>AR Situs Bersejarah Dunia</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     
     <!-- Import Libraries -->
@@ -37,17 +37,18 @@
         to { bottom: 20px; opacity: 1; }
       }
 
-      #info-panel h2 {
+      #info-title {
         margin: 0 0 10px 0;
         color: #333;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
+        font-weight: bold;
       }
 
-      #info-panel p {
+      #info-text {
         margin: 0 0 15px 0;
         color: #555;
-        font-size: 0.9rem;
-        line-height: 1.4;
+        font-size: 0.95rem;
+        line-height: 1.5;
       }
 
       #close-btn {
@@ -58,6 +59,7 @@
         border-radius: 8px;
         cursor: pointer;
         font-weight: bold;
+        align-self: flex-end;
       }
 
       /* Petunjuk Gestur */
@@ -73,7 +75,6 @@
         z-index: 999;
       }
       
-      /* Loading Screen sederhana */
       .arjs-loader {
         height: 100%;
         width: 100%;
@@ -95,23 +96,18 @@
   </head>
   <body style="margin: 0; overflow: hidden;">
     
-    <!-- Loader (Opsional, standard AR.js) -->
     <div class="arjs-loader">
-      <div>Loading AR...</div>
+      <div>Loading AR Assets...</div>
     </div>
 
-    <!-- UI Overlay: Petunjuk -->
     <div id="gesture-instruction">
-      <p>Arahkan ke Marker. <br> 👆 Geser: Putar | 🤏 Cubit: Zoom | 👇 Tap: Info</p>
+      <p>Arahkan ke Marker (Pattern/Barcode 1-7). <br> 👆 Geser: Putar | 👇 Tap: Info</p>
     </div>
 
-    <!-- UI Overlay: Info Panel -->
+    <!-- UI Overlay: Info Panel Dinamis -->
     <div id="info-panel">
-      <h2>Candi Borobudur</h2>
-      <p>
-        Borobudur adalah candi Buddha terbesar di dunia yang dibangun pada abad ke-9 Masehi oleh Wangsa Syailendra. 
-        Terletak di Magelang, Jawa Tengah. Candi ini memiliki struktur punden berundak dengan relief yang menceritakan kehidupan Buddha.
-      </p>
+      <div id="info-title">Judul</div>
+      <div id="info-text">Deskripsi</div>
       <button id="close-btn" onclick="document.getElementById('info-panel').style.display='none'">Tutup</button>
     </div>
 
@@ -127,46 +123,133 @@
       raycaster="objects: .clickable" 
     >
       
-      <!-- Asset Management -->
+      <!-- A. Asset Management -->
       <a-assets>
         <a-asset-item id="borobudur-glb" src="assets/models/borobudur.glb"></a-asset-item>
+        <a-asset-item id="taj-mahal-glb" src="assets/models/taj_mahal.glb"></a-asset-item>
+        <a-asset-item id="chichen-itza-glb" src="assets/models/chichen_itza_pyramid_3d_reconstruction.glb"></a-asset-item>
+        <a-asset-item id="giza-glb" src="assets/models/the_great_pyramid_of_giza.glb"></a-asset-item>
+        <a-asset-item id="pisa-glb" src="assets/models/torre_pisa.glb"></a-asset-item>
+        <a-asset-item id="petra-glb" src="assets/models/ad-deir_monastery_petra_jordan.glb"></a-asset-item>
+        <a-asset-item id="angkor-glb" src="assets/models/angkor_wat.glb"></a-asset-item>
+        <a-asset-item id="khertvisi-glb" src="assets/models/khertvisi_fortress_-_raw_scan.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Pencahayaan (Agar model tidak gelap) -->
-      <a-entity light="type: ambient; intensity: 1;"></a-entity>
-      <a-entity light="type: directional; intensity: 1.5; position: 2 4 4"></a-entity>
+      <!-- B. Pencahayaan -->
+      <a-entity light="type: ambient; intensity: 0.8;"></a-entity>
+      <a-entity light="type: directional; intensity: 1; position: 1 4 2"></a-entity>
 
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-borobudur.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="10"
-        smoothTolerance="0.01"
-        smoothThreshold="5"
-      >
-        
-        <!-- MODEL UTAMA -->
-        <!-- scale: Disesuaikan agar tidak terlalu besar/kecil. Jika model raksasa, ubah jadi 0.01 0.01 0.01 -->
+
+      <!-- C. MARKERS -->
+
+      <!-- 1. BOROBUDUR (Custom Pattern Marker) -->
+      <a-marker type="pattern" url="assets/markers/pattern-borobudur.patt" smooth="true">
         <a-entity 
-          id="borobudur-model"
           gltf-model="#borobudur-glb"
           position="0 0 0" 
-          scale="0.5 0.5 0.5"
-          rotation="0 0 0"
+          scale="0.5 0.5 0.5" 
           class="clickable"
           gesture-handler
-          info-click-handler
+          info-click-handler="title: Candi Borobudur; text: Candi Buddha terbesar di dunia (Abad ke-9) di Magelang, Indonesia. Memiliki struktur punden berundak dan ribuan panel relief."
         >
         </a-entity>
+      </a-marker>
 
+      <!-- 2. TAJ MAHAL (Barcode 1) -->
+      <a-marker type="barcode" value="1" smooth="true">
+        <a-entity 
+          gltf-model="#taj-mahal-glb"
+          position="0 0 0" 
+          scale="0.02 0.02 0.02" 
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Taj Mahal; text: Mausoleum marmer putih di Agra, India. Dibangun oleh Kaisar Shah Jahan (1632) untuk mengenang istri tercintanya, Mumtaz Mahal."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 3. CHICHEN ITZA (Barcode 2) -->
+      <a-marker type="barcode" value="2" smooth="true">
+        <a-entity 
+          gltf-model="#chichen-itza-glb"
+          position="0 0 0" 
+          scale="0.05 0.05 0.05" 
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Chichen Itza; text: Kota suci suku Maya di Meksiko. Struktur terkenalnya adalah piramida El Castillo yang berfungsi sebagai kalender astronomi."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 4. MENARA PISA (Barcode 3) -->
+      <a-marker type="barcode" value="3" smooth="true">
+        <a-entity 
+          gltf-model="#pisa-glb"
+          position="0 0 0" 
+          scale="0.5 0.5 0.5" 
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Menara Pisa; text: Menara lonceng katedral di Pisa, Italia. Terkenal karena kemiringannya yang tidak disengaja akibat pondasi tanah yang tidak stabil."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 5. PIRAMIDA GIZA (Barcode 4) -->
+      <a-marker type="barcode" value="4" smooth="true">
+        <a-entity 
+          gltf-model="#giza-glb"
+          position="0 0 0" 
+          scale="0.01 0.01 0.01" 
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Piramida Agung Giza; text: Piramida tertua dan terbesar dari tiga piramida di Giza, Mesir. Makam Firaun Khufu yang dibangun sekitar 2560 SM."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 6. PETRA (Barcode 5) -->
+      <a-marker type="barcode" value="5" smooth="true">
+        <a-entity 
+          gltf-model="#petra-glb"
+          position="0 0 0" 
+          scale="0.05 0.05 0.05" 
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Petra (Ad Deir); text: Situs arkeologi bersejarah di Yordania selatan. Terkenal dengan arsitektur yang dipahat langsung pada tebing batu merah."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 7. ANGKOR WAT (Barcode 6) -->
+      <a-marker type="barcode" value="6" smooth="true">
+        <a-entity 
+          gltf-model="#angkor-glb"
+          position="0 0 0" 
+          scale="0.05 0.05 0.05" 
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Angkor Wat; text: Kompleks candi terbesar di dunia yang terletak di Kamboja. Awalnya dibangun sebagai candi Hindu, kemudian berubah menjadi Buddha."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 8. KHERTVISI FORTRESS (Barcode 7) -->
+      <a-marker type="barcode" value="7" smooth="true">
+        <a-entity 
+          gltf-model="#khertvisi-glb"
+          position="0 0 0" 
+          scale="0.1 0.1 0.1" 
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Benteng Khertvisi; text: Salah satu benteng tertua di Georgia, terletak di tebing bebatuan tinggi di ngarai sungai Kura."
+        >
+        </a-entity>
       </a-marker>
 
       <a-entity camera></a-entity>
     </a-scene>
 
     <script>
-      // Hilangkan loader saat scene siap
       document.querySelector('a-scene').addEventListener('loaded', function () {
         document.querySelector('.arjs-loader').style.display = 'none';
       });

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR Situs Bersejarah Dunia</title>
+    <title>AR Situs Bersejarah</title>
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     
     <!-- Import Libraries -->
@@ -37,18 +37,17 @@
         to { bottom: 20px; opacity: 1; }
       }
 
-      #info-title {
+      #info-panel h2 {
         margin: 0 0 10px 0;
         color: #333;
-        font-size: 1.3rem;
-        font-weight: bold;
+        font-size: 1.2rem;
       }
 
-      #info-text {
+      #info-panel p {
         margin: 0 0 15px 0;
         color: #555;
-        font-size: 0.95rem;
-        line-height: 1.5;
+        font-size: 0.9rem;
+        line-height: 1.4;
       }
 
       #close-btn {
@@ -59,7 +58,6 @@
         border-radius: 8px;
         cursor: pointer;
         font-weight: bold;
-        align-self: flex-end;
       }
 
       /* Petunjuk Gestur */
@@ -75,6 +73,7 @@
         z-index: 999;
       }
       
+      /* Loading Screen sederhana */
       .arjs-loader {
         height: 100%;
         width: 100%;
@@ -96,18 +95,21 @@
   </head>
   <body style="margin: 0; overflow: hidden;">
     
+    <!-- Loader -->
     <div class="arjs-loader">
-      <div>Loading AR Assets...</div>
+      <div>Loading AR...</div>
     </div>
 
+    <!-- UI Overlay: Petunjuk -->
     <div id="gesture-instruction">
-      <p>Arahkan ke Marker (Pattern/Barcode 1-7). <br> 👆 Geser: Putar | 👇 Tap: Info</p>
+      <p>Arahkan ke Marker. <br> 👆 Geser: Putar | 🤏 Cubit: Zoom | 👇 Tap: Info</p>
     </div>
 
-    <!-- UI Overlay: Info Panel Dinamis -->
+    <!-- UI Overlay: Info Panel -->
     <div id="info-panel">
-      <div id="info-title">Judul</div>
-      <div id="info-text">Deskripsi</div>
+      <!-- ID ditambahkan agar bisa diupdate oleh Javascript -->
+      <h2 id="info-title">Informasi Situs</h2>
+      <p id="info-text">Deskripsi situs akan muncul di sini.</p>
       <button id="close-btn" onclick="document.getElementById('info-panel').style.display='none'">Tutup</button>
     </div>
 
@@ -126,12 +128,15 @@
       <!-- Asset Management -->
       <a-assets timeout="10000">
         <a-asset-item id="borobudur-glb" src="assets/models/borobudur.glb"></a-asset-item>
+        <a-asset-item id="pyramid-glb" src="assets/models/pyramid.glb"></a-asset-item>
+        <a-asset-item id="taj-mahal-glb" src="assets/models/taj_mahal.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Pencahayaan (Disederhanakan untuk performa) -->
+      <!-- Pencahayaan -->
       <a-entity light="type: ambient; intensity: 1.2;"></a-entity>
       <a-entity light="type: directional; intensity: 0.8; position: -1 2 1"></a-entity>
 
+      <!-- 1. Candi Borobudur -->
       <a-marker 
         type="pattern" 
         url="assets/markers/pattern-borobudur.patt"
@@ -144,101 +149,55 @@
         <a-entity 
           gltf-model="#borobudur-glb"
           position="0 0 0" 
-          scale="0.5 0.5 0.5" 
+          scale="0.5 0.5 0.5"
+          rotation="0 0 0"
           class="clickable"
           gesture-handler
-          info-click-handler="title: Candi Borobudur; text: Candi Buddha terbesar di dunia (Abad ke-9) di Magelang, Indonesia. Memiliki struktur punden berundak dan ribuan panel relief."
+          info-click-handler="title: Candi Borobudur; text: Borobudur adalah candi Buddha terbesar di dunia yang dibangun pada abad ke-9 Masehi oleh Wangsa Syailendra di Magelang, Jawa Tengah."
         >
         </a-entity>
       </a-marker>
 
-      <!-- 2. TAJ MAHAL (Custom Pattern Marker) -->
-      <a-marker type="pattern" url="assets/markers/pattern-taj-mahal.patt" smooth="true">
+      <!-- 2. Piramida Giza -->
+      <a-marker 
+        type="pattern" 
+        url="assets/markers/pattern-pyramid.patt"
+        emitevents="true"
+        smooth="true"
+        smoothCount="5"
+        smoothTolerance="0.01"
+        smoothThreshold="2"
+      >
+        <a-entity 
+          gltf-model="#pyramid-glb"
+          position="0 0 0" 
+          scale="0.05 0.05 0.05"
+          rotation="0 0 0"
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Piramida Agung Giza; text: Piramida tertua dan terbesar dari tiga piramida di Nekropolis Giza, Mesir. Dibangun sebagai makam untuk Firaun Khufu sekitar tahun 2560 SM."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 3. Taj Mahal -->
+      <a-marker 
+        type="pattern" 
+        url="assets/markers/pattern-taj-mahal.patt"
+        emitevents="true"
+        smooth="true"
+        smoothCount="5"
+        smoothTolerance="0.01"
+        smoothThreshold="2"
+      >
         <a-entity 
           gltf-model="#taj-mahal-glb"
           position="0 0 0" 
-          scale="0.02 0.02 0.02" 
+          scale="0.05 0.05 0.05"
+          rotation="0 0 0"
           class="clickable"
           gesture-handler
-          info-click-handler="title: Taj Mahal; text: Mausoleum marmer putih di Agra, India. Dibangun oleh Kaisar Shah Jahan (1632) untuk mengenang istri tercintanya, Mumtaz Mahal."
-        >
-        </a-entity>
-      </a-marker>
-
-      <!-- 3. CHICHEN ITZA (Barcode 2) -->
-      <a-marker type="barcode" value="2" smooth="true">
-        <a-entity 
-          gltf-model="#chichen-itza-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05" 
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Chichen Itza; text: Kota suci suku Maya di Meksiko. Struktur terkenalnya adalah piramida El Castillo yang berfungsi sebagai kalender astronomi."
-        >
-        </a-entity>
-      </a-marker>
-
-      <!-- 4. MENARA PISA (Barcode 3) -->
-      <a-marker type="barcode" value="3" smooth="true">
-        <a-entity 
-          gltf-model="#pisa-glb"
-          position="0 0 0" 
-          scale="0.5 0.5 0.5" 
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Menara Pisa; text: Menara lonceng katedral di Pisa, Italia. Terkenal karena kemiringannya yang tidak disengaja akibat pondasi tanah yang tidak stabil."
-        >
-        </a-entity>
-      </a-marker>
-
-      <!-- 5. PIRAMIDA GIZA (Barcode 4) -->
-      <a-marker type="barcode" value="4" smooth="true">
-        <a-entity 
-          gltf-model="#giza-glb"
-          position="0 0 0" 
-          scale="0.01 0.01 0.01" 
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Piramida Agung Giza; text: Piramida tertua dan terbesar dari tiga piramida di Giza, Mesir. Makam Firaun Khufu yang dibangun sekitar 2560 SM."
-        >
-        </a-entity>
-      </a-marker>
-
-      <!-- 6. PETRA (Barcode 5) -->
-      <a-marker type="barcode" value="5" smooth="true">
-        <a-entity 
-          gltf-model="#petra-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05" 
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Petra (Ad Deir); text: Situs arkeologi bersejarah di Yordania selatan. Terkenal dengan arsitektur yang dipahat langsung pada tebing batu merah."
-        >
-        </a-entity>
-      </a-marker>
-
-      <!-- 7. ANGKOR WAT (Barcode 6) -->
-      <a-marker type="barcode" value="6" smooth="true">
-        <a-entity 
-          gltf-model="#angkor-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05" 
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Angkor Wat; text: Kompleks candi terbesar di dunia yang terletak di Kamboja. Awalnya dibangun sebagai candi Hindu, kemudian berubah menjadi Buddha."
-        >
-        </a-entity>
-      </a-marker>
-
-      <!-- 8. KHERTVISI FORTRESS (Barcode 7) -->
-      <a-marker type="barcode" value="7" smooth="true">
-        <a-entity 
-          gltf-model="#khertvisi-glb"
-          position="0 0 0" 
-          scale="0.1 0.1 0.1" 
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Benteng Khertvisi; text: Salah satu benteng tertua di Georgia, terletak di tebing bebatuan tinggi di ngarai sungai Kura."
+          info-click-handler="title: Taj Mahal; text: Sebuah mausoleum marmer putih di Agra, India. Dibangun oleh kaisar Mughal Shah Jahan untuk mengenang istri kesayangannya, Mumtaz Mahal."
         >
         </a-entity>
       </a-marker>

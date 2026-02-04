@@ -1,329 +1,455 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>AR Situs Bersejarah</title>
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    
-    <!-- Import Libraries -->
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    
-    <!-- Import Custom Interactions -->
-    <script src="assets/js/interaction.js"></script>
 
-    <style>
-      /* Style untuk Info Panel (Overlay) */
-      #info-panel {
-        display: none;
-        position: fixed;
+<head>
+  <title>AR Situs Bersejarah</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+  <!-- Import Libraries -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+  <!-- Import Custom Interactions -->
+  <script src="assets/js/interaction.js"></script>
+
+  <style>
+    /* Style untuk Info Panel (Overlay) */
+    #info-panel {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      max-width: 400px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      flex-direction: column;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      z-index: 1000;
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        bottom: -100px;
+        opacity: 0;
+      }
+
+      to {
         bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 85%;
-        max-width: 400px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        flex-direction: column;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        z-index: 1000;
-        animation: slideUp 0.3s ease-out;
+        opacity: 1;
+      }
+    }
+
+    #info-panel h2 {
+      margin: 0 0 10px 0;
+      color: #333;
+      font-size: 1.2rem;
+    }
+
+    #info-panel p {
+      margin: 0 0 15px 0;
+      color: #555;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    #close-btn {
+      background: #d9534f;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Petunjuk Gestur */
+    #gesture-instruction {
+      position: fixed;
+      top: 10px;
+      width: 100%;
+      text-align: center;
+      color: white;
+      text-shadow: 1px 1px 2px black;
+      font-family: sans-serif;
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    /* Loading Screen sederhana */
+    .arjs-loader {
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-color: rgba(0, 0, 0, 0.8);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .arjs-loader div {
+      text-align: center;
+      font-size: 1.25em;
+      color: white;
+    }
+
+    /* Loading Screen Styles */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-content {
+      text-align: center;
+      color: white;
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 20px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-top: 5px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
       }
 
-      @keyframes slideUp {
-        from { bottom: -100px; opacity: 0; }
-        to { bottom: 20px; opacity: 1; }
+      100% {
+        transform: rotate(360deg);
       }
+    }
 
-      #info-panel h2 {
-        margin: 0 0 10px 0;
-        color: #333;
-        font-size: 1.2rem;
-      }
+    .loading-content h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.5rem;
+      margin: 0 0 10px 0;
+    }
 
-      #info-panel p {
-        margin: 0 0 15px 0;
-        color: #555;
-        font-size: 0.9rem;
-        line-height: 1.4;
-      }
+    .loading-content p {
+      font-size: 1rem;
+      opacity: 0.9;
+      margin: 0 0 20px 0;
+    }
 
-      #close-btn {
-        background: #d9534f;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-      }
+    .progress-bar {
+      width: 250px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 0 auto;
+    }
 
-      /* Petunjuk Gestur */
-      #gesture-instruction {
-        position: fixed;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        color: white;
-        text-shadow: 1px 1px 2px black;
-        font-family: sans-serif;
-        pointer-events: none;
-        z-index: 999;
-      }
-      
-      /* Loading Screen sederhana */
-      .arjs-loader {
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .arjs-loader div {
-        text-align: center;
-        font-size: 1.25em;
-        color: white;
-      }
-    </style>
-  </head>
-  <body style="margin: 0; overflow: hidden;">
-    
-    <!-- Loader -->
-    <div class="arjs-loader">
-      <div>Loading AR...</div>
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f6d365 0%, #fda085 100%);
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body style="margin: 0; overflow: hidden;">
+
+  <!-- Loader -->
+  <div class="arjs-loader">
+    <div>Loading AR...</div>
+  </div>
+
+  <!-- Back to Home Button -->
+  <a href="home.html"
+    style="position: fixed; top: 20px; left: 20px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: none; border-radius: 50px; padding: 12px 24px; font-size: 1rem; font-weight: 600; color: #667eea; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000; text-decoration: none; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;">
+    ← Home
+  </a>
+
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <h2>Memuat AR Camera...</h2>
+      <p id="loading-text">Mohon tunggu sebentar</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
     </div>
+  </div>
 
-    <!-- UI Overlay: Petunjuk -->
-    <div id="gesture-instruction">
-      <p>Arahkan ke Marker. <br> 👆 Geser: Putar | 🤏 Cubit: Zoom | 👇 Tap: Info</p>
-    </div>
+  <!-- UI Overlay: Petunjuk -->
+  <div id="gesture-instruction">
+    <p>Arahkan ke Marker. <br> 👆 Geser: Putar | 🤏 Cubit: Zoom | 👇 Tap: Info</p>
+  </div>
 
-    <!-- UI Overlay: Info Panel -->
-    <div id="info-panel">
-      <!-- ID ditambahkan agar bisa diupdate oleh Javascript -->
-      <h2 id="info-title">Informasi Situs</h2>
-      <p id="info-text">Deskripsi situs akan muncul di sini.</p>
-      <button id="close-btn" onclick="document.getElementById('info-panel').style.display='none'">Tutup</button>
-    </div>
+  <!-- UI Overlay: Info Panel -->
+  <div id="info-panel">
+    <!-- ID ditambahkan agar bisa diupdate oleh Javascript -->
+    <h2 id="info-title">Informasi Situs</h2>
+    <p id="info-text">Deskripsi situs akan muncul di sini.</p>
+    <button id="close-btn" onclick="document.getElementById('info-panel').style.display='none'">Tutup</button>
+  </div>
 
-    <!-- A-Frame Scene -->
-    <a-scene
-      embedded
-      arjs="sourceType: webcam; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-      renderer="logarithmicDepthBuffer: true; colorManagement: true; precision: medium; antialias: false; alpha: true;"
-      vr-mode-ui="enabled: false"
-      gesture-detector 
-      id="scene"
-      cursor="rayOrigin: mouse; fuse: false" 
-      raycaster="objects: .clickable; interval: 500" 
-    >
-      
-      <!-- Asset Management -->
-      <a-assets timeout="10000">
-        <a-asset-item id="borobudur-glb" src="assets/models/borobudur.glb"></a-asset-item>
-        <a-asset-item id="pyramid-glb" src="assets/models/pyramid.glb"></a-asset-item>
-        <a-asset-item id="taj-mahal-glb" src="assets/models/taj_mahal.glb"></a-asset-item>
-        <a-asset-item id="ad-deir-glb" src="assets/models/ad-deir_monastery_petra_jordan.glb"></a-asset-item>
-        <a-asset-item id="angkor-wat-glb" src="assets/models/angkor_wat.glb"></a-asset-item>
-        <a-asset-item id="chichen-itza-glb" src="assets/models/chichen_itza_pyramid_3d_reconstruction.glb"></a-asset-item>
-        <a-asset-item id="khertvisi-glb" src="assets/models/khertvisi_fortress_-_raw_scan.glb"></a-asset-item>
-        <a-asset-item id="torre-pisa-glb" src="assets/models/torre_pisa.glb"></a-asset-item>
-      </a-assets>
+  <!-- A-Frame Scene -->
+  <a-scene embedded
+    arjs="sourceType: webcam; sourceWidth: 640; sourceHeight: 480; displayWidth: 640; displayHeight: 480; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; trackingMethod: best; videoTexture: true;"
+    renderer="logarithmicDepthBuffer: false; colorManagement: true; precision: low; antialias: false; alpha: true; powerPreference: low-power; physicallyCorrectLights: false;"
+    vr-mode-ui="enabled: false" gesture-detector id="scene" cursor="rayOrigin: mouse; fuse: false"
+    raycaster="objects: .clickable; interval: 500" loading-screen="enabled: false"
+    device-orientation-permission-ui="enabled: false">
 
-      <!-- Pencahayaan -->
-      <a-entity light="type: ambient; intensity: 1.2;"></a-entity>
-      <a-entity light="type: directional; intensity: 0.8; position: -1 2 1"></a-entity>
+    <!-- Asset Management - Models will be loaded on demand -->
+    <a-assets timeout="5000">
+      <!-- No models preloaded - lazy loading enabled -->
+    </a-assets>
 
-      <!-- 1. Candi Borobudur -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-borobudur.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#borobudur-glb"
-          position="0 0 0" 
-          scale="0.5 0.5 0.5"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Candi Borobudur; text: Borobudur adalah candi Buddha terbesar di dunia yang dibangun pada abad ke-9 Masehi oleh Wangsa Syailendra di Magelang, Jawa Tengah."
-        >
-        </a-entity>
-      </a-marker>
+    <!-- Pencahayaan -->
+    <a-entity light="type: ambient; intensity: 1.2;"></a-entity>
+    <a-entity light="type: directional; intensity: 0.8; position: -1 2 1"></a-entity>
 
-      <!-- 2. Piramida Giza -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-pyramid.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#pyramid-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Piramida Agung Giza; text: Piramida tertua dan terbesar dari tiga piramida di Nekropolis Giza, Mesir. Dibangun sebagai makam untuk Firaun Khufu sekitar tahun 2560 SM."
-        >
-        </a-entity>
-      </a-marker>
+    <!-- 1. Candi Borobudur -->
+    <a-marker type="pattern" url="assets/markers/pattern-borobudur.patt" emitevents="true" smooth="true" smoothCount="5"
+      smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity class="clickable lazy-model" data-model-src="assets/models/borobudur.glb" position="0 0 0"
+        scale="0.5 0.5 0.5" rotation="0 0 0" gesture-handler
+        info-click-handler="title: Candi Borobudur; text: Borobudur adalah candi Buddha terbesar di dunia yang dibangun pada abad ke-9 Masehi oleh Wangsa Syailendra di Magelang, Jawa Tengah.">
+      </a-entity>
+    </a-marker>
 
-      <!-- 3. Taj Mahal -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-taj-mahal.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#taj-mahal-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Taj Mahal; text: Sebuah mausoleum marmer putih di Agra, India. Dibangun oleh kaisar Mughal Shah Jahan untuk mengenang istri kesayangannya, Mumtaz Mahal."
-        >
-        </a-entity>
-      </a-marker>
+    <!-- 2. Piramida Giza -->
+    <a-marker type="pattern" url="assets/markers/pattern-pyramid.patt" emitevents="true" smooth="true" smoothCount="5"
+      smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity class="clickable lazy-model" data-model-src="assets/models/pyramid.glb" position="0 0 0"
+        scale="0.05 0.05 0.05" rotation="0 0 0" gesture-handler
+        info-click-handler="title: Piramida Agung Giza; text: Piramida tertua dan terbesar dari tiga piramida di Nekropolis Giza, Mesir. Dibangun sebagai makam untuk Firaun Khufu sekitar tahun 2560 SM.">
+      </a-entity>
+    </a-marker>
 
-      <!-- 4. Ad Deir (Petra) -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-ad_deir.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#ad-deir-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Ad Deir (The Monastery); text: Monumen monumental yang dipahat dari batu di kota kuno Petra, Yordania. Dibangun oleh bangsa Nabatean pada abad ke-1 Masehi."
-        >
-        </a-entity>
-      </a-marker>
+    <!-- 3. Taj Mahal -->
+    <a-marker type="pattern" url="assets/markers/pattern-taj-mahal.patt" emitevents="true" smooth="true" smoothCount="5"
+      smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity class="clickable lazy-model" data-model-src="assets/models/taj_mahal.glb" position="0 0 0"
+        scale="0.05 0.05 0.05" rotation="0 0 0" gesture-handler
+        info-click-handler="title: Taj Mahal; text: Sebuah mausoleum marmer putih di Agra, India. Dibangun oleh kaisar Mughal Shah Jahan untuk mengenang istri kesayangannya, Mumtaz Mahal.">
+      </a-entity>
+    </a-marker>
 
-      <!-- 5. Angkor Wat -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-angkor_wat.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#angkor-wat-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Angkor Wat; text: Kompleks candi Hindu-Buddha terbesar di dunia yang terletak di Kamboja. Dibangun oleh Raja Suryavarman II pada awal abad ke-12."
-        >
-        </a-entity>
-      </a-marker>
+    <!-- 4. Ad Deir (Petra) -->
+    <a-marker type="pattern" url="assets/markers/pattern-ad_deir.patt" emitevents="true" smooth="true" smoothCount="5"
+      smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity class="clickable lazy-model" data-model-src="assets/models/ad-deir_monastery_petra_jordan.glb"
+        position="0 0 0" scale="0.05 0.05 0.05" rotation="0 0 0" gesture-handler
+        info-click-handler="title: Ad Deir (The Monastery); text: Monumen monumental yang dipahat dari batu di kota kuno Petra, Yordania. Dibangun oleh bangsa Nabatean pada abad ke-1 Masehi.">
+      </a-entity>
+    </a-marker>
 
-      <!-- 6. Chichen Itza -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-chichen_itza.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#chichen-itza-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Chichen Itza (El Castillo); text: Piramida Mesoamerika yang mendominasi pusat situs arkeologi Chichen Itza di negara bagian Yucatan, Meksiko."
-        >
-        </a-entity>
-      </a-marker>
+    <!-- 5. Angkor Wat -->
+    <a-marker type="pattern" url="assets/markers/pattern-angkor_wat.patt" emitevents="true" smooth="true"
+      smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity class="clickable lazy-model" data-model-src="assets/models/angkor_wat.glb" position="0 0 0"
+        scale="0.05 0.05 0.05" rotation="0 0 0" gesture-handler
+        info-click-handler="title: Angkor Wat; text: Kompleks candi Hindu-Buddha terbesar di dunia yang terletak di Kamboja. Dibangun oleh Raja Suryavarman II pada awal abad ke-12.">
+      </a-entity>
+    </a-marker>
 
-      <!-- 7. Khertvisi Fortress -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-khervitsi_fortress.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#khertvisi-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Benteng Khertvisi; text: Salah satu benteng tertua di Georgia, terletak di wilayah Meskheti selatan. Benteng ini sudah ada sejak abad ke-2 SM."
-        >
-        </a-entity>
-      </a-marker>
+    <!-- 6. Chichen Itza -->
+    <a-marker type="pattern" url="assets/markers/pattern-chichen_itza.patt" emitevents="true" smooth="true"
+      smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity class="clickable lazy-model" data-model-src="assets/models/chichen_itza_pyramid_3d_reconstruction.glb"
+        position="0 0 0" scale="0.05 0.05 0.05" rotation="0 0 0" gesture-handler
+        info-click-handler="title: Chichen Itza (El Castillo); text: Piramida Mesoamerika yang mendominasi pusat situs arkeologi Chichen Itza di negara bagian Yucatan, Meksiko.">
+      </a-entity>
+    </a-marker>
 
-      <!-- 8. Menara Pisa -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-tore_piza.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#torre-pisa-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Menara Miring Pisa; text: Menara lonceng katedral di kota Pisa, Italia. Terkenal karena kemiringannya yang tidak disengaja akibat pondasi yang tidak stabil."
-        >
-        </a-entity>
-      </a-marker>
+    <!-- 7. Khertvisi Fortress -->
+    <a-marker type="pattern" url="assets/markers/pattern-khervitsi_fortress.patt" emitevents="true" smooth="true"
+      smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity class="clickable lazy-model" data-model-src="assets/models/khertvisi_fortress_-_raw_scan.glb"
+        position="0 0 0" scale="0.05 0.05 0.05" rotation="0 0 0" gesture-handler
+        info-click-handler="title: Benteng Khertvisi; text: Salah satu benteng tertua di Georgia, terletak di wilayah Meskheti selatan. Benteng ini sudah ada sejak abad ke-2 SM.">
+      </a-entity>
+    </a-marker>
 
-      <a-entity camera></a-entity>
-    </a-scene>
+    <!-- 8. Menara Pisa -->
+    <a-marker type="pattern" url="assets/markers/pattern-tore_piza.patt" emitevents="true" smooth="true" smoothCount="5"
+      smoothTolerance="0.01" smoothThreshold="2">
+      <a-entity class="clickable lazy-model" data-model-src="assets/models/torre_pisa.glb" position="0 0 0"
+        scale="0.05 0.05 0.05" rotation="0 0 0" gesture-handler
+        info-click-handler="title: Menara Miring Pisa; text: Menara lonceng katedral di kota Pisa, Italia. Terkenal karena kemiringannya yang tidak disengaja akibat pondasi yang tidak stabil.">
+      </a-entity>
+    </a-marker>
 
-    <script>
-      document.querySelector('a-scene').addEventListener('loaded', function () {
-        document.querySelector('.arjs-loader').style.display = 'none';
+    <a-entity camera></a-entity>
+  </a-scene>
+
+  <script>
+    // Loading Screen Management
+    let progress = 0;
+    const loadingScreen = document.getElementById('loading-screen');
+    const progressFill = document.getElementById('progress-fill');
+    const loadingText = document.getElementById('loading-text');
+
+    // Simulate loading progress
+    const progressInterval = setInterval(() => {
+      if (progress < 70) {
+        progress += Math.random() * 15;
+        if (progress > 70) progress = 70;
+        progressFill.style.width = progress + '%';
+
+        if (progress < 30) {
+          loadingText.textContent = 'Memuat library AR...';
+        } else if (progress < 60) {
+          loadingText.textContent = 'Menginisialisasi kamera...';
+        } else {
+          loadingText.textContent = 'Hampir selesai...';
+        }
+      }
+    }, 300);
+
+    // Hide old AR.js loader
+    const arjsLoader = document.querySelector('.arjs-loader');
+    if (arjsLoader) {
+      arjsLoader.style.display = 'none';
+    }
+
+    // When scene is loaded
+    const scene = document.querySelector('a-scene');
+
+    scene.addEventListener('loaded', function () {
+      clearInterval(progressInterval);
+      progress = 100;
+      progressFill.style.width = '100%';
+      loadingText.textContent = 'Siap!';
+
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 500);
+      }, 500);
+    });
+
+    // Fallback: hide loading screen after 10 seconds if not loaded
+    setTimeout(() => {
+      if (!loadingScreen.classList.contains('hidden')) {
+        clearInterval(progressInterval);
+        progressFill.style.width = '100%';
+        loadingText.textContent = 'Siap!';
+        loadingScreen.classList.add('hidden');
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 500);
+      }
+    }, 10000);
+
+    // Camera Permission and Error Handling
+    let cameraCheckTimeout;
+
+    // Check if camera is working after 5 seconds
+    cameraCheckTimeout = setTimeout(() => {
+      const video = document.querySelector('video');
+      if (!video || video.readyState === 0) {
+        // Camera not working, show error
+        loadingText.innerHTML = '⚠️ Kamera tidak dapat diakses<br><small>Pastikan Anda memberikan izin kamera</small>';
+        loadingText.style.color = '#ff6b6b';
+        progressFill.style.background = 'linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 100%)';
+
+        // Add retry button
+        const retryBtn = document.createElement('button');
+        retryBtn.textContent = 'Coba Lagi';
+        retryBtn.style.cssText = 'margin-top: 15px; padding: 10px 30px; background: white; color: #667eea; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 1rem;';
+        retryBtn.onclick = () => location.reload();
+        document.querySelector('.loading-content').appendChild(retryBtn);
+      }
+    }, 5000);
+
+    // Clear timeout when camera starts
+    scene.addEventListener('camera-init', function () {
+      clearTimeout(cameraCheckTimeout);
+    });
+
+    // Mobile-specific video element fix
+    setTimeout(() => {
+      const video = document.querySelector('video');
+      if (video) {
+        console.log('Video element found:', video);
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.style.display = 'block';
+        video.style.position = 'absolute';
+        video.style.top = '0';
+        video.style.left = '0';
+        video.style.width = '100%';
+        video.style.height = '100%';
+        video.style.objectFit = 'cover';
+        video.style.zIndex = '0';
+
+        // Force play on mobile
+        video.play().catch(err => console.error('Video play error:', err));
+      } else {
+        console.error('Video element not found!');
+      }
+    }, 2000);
+
+    // Lazy Loading for 3D Models
+    const loadedModels = new Set();
+
+    // Function to load model on demand
+    function loadModelForEntity(entity) {
+      const modelSrc = entity.getAttribute('data-model-src');
+      if (!modelSrc || loadedModels.has(modelSrc)) return;
+
+      console.log('Loading model:', modelSrc);
+      loadingText.textContent = 'Memuat model 3D...';
+
+      // Set the gltf-model attribute to load the model
+      entity.setAttribute('gltf-model', modelSrc);
+      loadedModels.add(modelSrc);
+
+      // Hide loading screen after model starts loading
+      setTimeout(() => {
+        if (loadingScreen && !loadingScreen.classList.contains('hidden')) {
+          loadingScreen.classList.add('hidden');
+        }
+      }, 500);
+    }
+
+    // Listen for marker found events
+    document.querySelectorAll('a-marker').forEach(marker => {
+      marker.addEventListener('markerFound', function () {
+        const lazyEntity = this.querySelector('.lazy-model');
+        if (lazyEntity) {
+          loadModelForEntity(lazyEntity);
+        }
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
+
 </html>

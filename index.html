@@ -114,36 +114,33 @@
     <!-- A-Frame Scene -->
     <a-scene
       embedded
-      arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
-      renderer="logarithmicDepthBuffer: true; colorManagement: true;"
+      arjs="sourceType: webcam; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+      renderer="logarithmicDepthBuffer: true; colorManagement: true; precision: medium; antialias: false; alpha: true;"
       vr-mode-ui="enabled: false"
       gesture-detector 
       id="scene"
       cursor="rayOrigin: mouse; fuse: false" 
-      raycaster="objects: .clickable" 
+      raycaster="objects: .clickable; interval: 500" 
     >
       
-      <!-- A. Asset Management -->
-      <a-assets>
+      <!-- Asset Management -->
+      <a-assets timeout="10000">
         <a-asset-item id="borobudur-glb" src="assets/models/borobudur.glb"></a-asset-item>
-        <a-asset-item id="taj-mahal-glb" src="assets/models/taj_mahal.glb"></a-asset-item>
-        <a-asset-item id="chichen-itza-glb" src="assets/models/chichen_itza_pyramid_3d_reconstruction.glb"></a-asset-item>
-        <a-asset-item id="giza-glb" src="assets/models/the_great_pyramid_of_giza.glb"></a-asset-item>
-        <a-asset-item id="pisa-glb" src="assets/models/torre_pisa.glb"></a-asset-item>
-        <a-asset-item id="petra-glb" src="assets/models/ad-deir_monastery_petra_jordan.glb"></a-asset-item>
-        <a-asset-item id="angkor-glb" src="assets/models/angkor_wat.glb"></a-asset-item>
-        <a-asset-item id="khertvisi-glb" src="assets/models/khertvisi_fortress_-_raw_scan.glb"></a-asset-item>
       </a-assets>
 
-      <!-- B. Pencahayaan -->
-      <a-entity light="type: ambient; intensity: 0.8;"></a-entity>
-      <a-entity light="type: directional; intensity: 1; position: 1 4 2"></a-entity>
+      <!-- Pencahayaan (Disederhanakan untuk performa) -->
+      <a-entity light="type: ambient; intensity: 1.2;"></a-entity>
+      <a-entity light="type: directional; intensity: 0.8; position: -1 2 1"></a-entity>
 
-
-      <!-- C. MARKERS -->
-
-      <!-- 1. BOROBUDUR (Custom Pattern Marker) -->
-      <a-marker type="pattern" url="assets/markers/pattern-borobudur.patt" smooth="true">
+      <a-marker 
+        type="pattern" 
+        url="assets/markers/pattern-borobudur.patt"
+        emitevents="true"
+        smooth="true"
+        smoothCount="5"
+        smoothTolerance="0.01"
+        smoothThreshold="2"
+      >
         <a-entity 
           gltf-model="#borobudur-glb"
           position="0 0 0" 

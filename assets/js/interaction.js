@@ -4,7 +4,6 @@
 */
 
 // KOMPONEN 1: Gesture Detector
-// Mendeteksi gerakan jari di layar
 AFRAME.registerComponent('gesture-detector', {
   schema: {
     element: { default: '' }
@@ -72,7 +71,6 @@ AFRAME.registerComponent('gesture-detector', {
 });
 
 // KOMPONEN 2: Gesture Handler
-// Mengubah properti rotasi/skala objek berdasarkan event gesture
 AFRAME.registerComponent('gesture-handler', {
   schema: {
     enabled: { default: true },
@@ -84,7 +82,6 @@ AFRAME.registerComponent('gesture-handler', {
     this.handleScale = this.handleScale.bind(this);
     this.handleRotation = this.handleRotation.bind(this);
     
-    // Listen to scene events emitted by gesture-detector
     this.el.sceneEl.addEventListener("twofingermove", this.handleScale);
     this.el.sceneEl.addEventListener("onefingermove", this.handleRotation);
   },
@@ -94,12 +91,16 @@ AFRAME.registerComponent('gesture-handler', {
   },
   handleRotation: function(event) {
     if (!this.data.enabled) return;
-    // Putar sumbu Y dan X berdasarkan gerakan jari
+    // Cek visibilitas objek sebelum rotasi
+    if (!this.el.object3D.visible) return; 
+    
     this.el.object3D.rotation.y += event.detail.positionChange.x * this.data.rotationFactor * 0.001;
-    // this.el.object3D.rotation.x += event.detail.positionChange.y * this.data.rotationFactor * 0.001; // Aktifkan jika ingin rotasi atas-bawah juga
   },
   handleScale: function(event) {
     if (!this.data.enabled) return;
+    // Cek visibilitas objek sebelum scale
+    if (!this.el.object3D.visible) return;
+
     const scaleFactor = 1 + event.detail.spreadChange * 0.005;
     const currentScale = this.el.object3D.scale.clone();
     const newScale = currentScale.multiplyScalar(scaleFactor);
@@ -121,7 +122,11 @@ AFRAME.registerComponent('info-click-handler', {
     const el = this.el;
     const data = this.data;
     
-    el.addEventListener('click', function () {
+    el.addEventListener('click', function (evt) {
+      // PERBAIKAN LOGIKA: Cek apakah objek benar-benar terlihat
+      // Jika parent marker tidak terdeteksi (visible=false), abaikan klik ini.
+      if (el.object3D.visible === false) return;
+
       const infoPanel = document.getElementById('info-panel');
       const infoTitle = document.getElementById('info-title');
       const infoText = document.getElementById('info-text');
@@ -136,10 +141,10 @@ AFRAME.registerComponent('info-click-handler', {
 
     // Cursor visual feedback
     el.addEventListener('mouseenter', function () {
-      el.object3D.scale.multiplyScalar(1.1);
+      if (el.object3D.visible) el.object3D.scale.multiplyScalar(1.1);
     });
     el.addEventListener('mouseleave', function () {
-      el.object3D.scale.multiplyScalar(0.909); 
+      if (el.object3D.visible) el.object3D.scale.multiplyScalar(0.909); 
     });
   }
 });

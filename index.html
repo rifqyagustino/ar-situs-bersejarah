@@ -12,7 +12,6 @@
     <script src="assets/js/interaction.js"></script>
 
     <style>
-      /* Style untuk Info Panel (Overlay) */
       #info-panel {
         display: none;
         position: fixed;
@@ -31,89 +30,26 @@
         z-index: 1000;
         animation: slideUp 0.3s ease-out;
       }
-
-      @keyframes slideUp {
-        from { bottom: -100px; opacity: 0; }
-        to { bottom: 20px; opacity: 1; }
-      }
-
-      #info-panel h2 {
-        margin: 0 0 10px 0;
-        color: #333;
-        font-size: 1.2rem;
-      }
-
-      #info-panel p {
-        margin: 0 0 15px 0;
-        color: #555;
-        font-size: 0.9rem;
-        line-height: 1.4;
-      }
-
-      #close-btn {
-        background: #d9534f;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-
-      /* Petunjuk Gestur */
-      #gesture-instruction {
-        position: fixed;
-        top: 10px;
-        width: 100%;
-        text-align: center;
-        color: white;
-        text-shadow: 1px 1px 2px black;
-        font-family: sans-serif;
-        pointer-events: none;
-        z-index: 999;
-      }
-      
-      /* Loading Screen sederhana */
-      .arjs-loader {
-        height: 100%;
-        width: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        background-color: rgba(0, 0, 0, 0.8);
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .arjs-loader div {
-        text-align: center;
-        font-size: 1.25em;
-        color: white;
-      }
+      @keyframes slideUp { from { bottom: -100px; opacity: 0; } to { bottom: 20px; opacity: 1; } }
+      #info-panel h2 { margin: 0 0 10px 0; color: #333; font-size: 1.2rem; }
+      #info-panel p { margin: 0 0 15px 0; color: #555; font-size: 0.9rem; line-height: 1.4; }
+      #close-btn { background: #d9534f; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+      #gesture-instruction { position: fixed; top: 10px; width: 100%; text-align: center; color: white; text-shadow: 1px 1px 2px black; font-family: sans-serif; pointer-events: none; z-index: 999; }
+      .arjs-loader { height: 100%; width: 100%; position: absolute; top: 0; left: 0; background-color: rgba(0, 0, 0, 0.8); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+      .arjs-loader div { text-align: center; font-size: 1.25em; color: white; }
     </style>
   </head>
   <body style="margin: 0; overflow: hidden;">
     
-    <!-- Loader -->
-    <div class="arjs-loader">
-      <div>Loading AR...</div>
-    </div>
+    <div class="arjs-loader"><div>Loading AR...</div></div>
+    <div id="gesture-instruction"><p>Arahkan ke Marker. <br> 👆 Geser: Putar | 🤏 Cubit: Zoom | 👇 Tap: Info</p></div>
 
-    <!-- UI Overlay: Petunjuk -->
-    <div id="gesture-instruction">
-      <p>Arahkan ke Marker. <br> 👆 Geser: Putar | 🤏 Cubit: Zoom | 👇 Tap: Info</p>
-    </div>
-
-    <!-- UI Overlay: Info Panel -->
     <div id="info-panel">
-      <!-- ID ditambahkan agar bisa diupdate oleh Javascript -->
       <h2 id="info-title">Informasi Situs</h2>
-      <p id="info-text">Deskripsi situs akan muncul di sini.</p>
+      <p id="info-text">Deskripsi situs.</p>
       <button id="close-btn" onclick="document.getElementById('info-panel').style.display='none'">Tutup</button>
     </div>
 
-    <!-- A-Frame Scene -->
     <a-scene
       embedded
       arjs="sourceType: webcam; sourceWidth: 1280; sourceHeight: 720; displayWidth: 1280; displayHeight: 720; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
@@ -122,10 +58,9 @@
       gesture-detector 
       id="scene"
       cursor="rayOrigin: mouse; fuse: false" 
-      raycaster="objects: .clickable; interval: 500" 
+      raycaster="objects: .clickable; interval: 500"
     >
       
-      <!-- Asset Management -->
       <a-assets timeout="10000">
         <a-asset-item id="borobudur-glb" src="assets/models/borobudur.glb"></a-asset-item>
         <a-asset-item id="pyramid-glb" src="assets/models/pyramid.glb"></a-asset-item>
@@ -137,193 +72,53 @@
         <a-asset-item id="torre-pisa-glb" src="assets/models/torre_pisa.glb"></a-asset-item>
       </a-assets>
 
-      <!-- Pencahayaan -->
       <a-entity light="type: ambient; intensity: 1.2;"></a-entity>
       <a-entity light="type: directional; intensity: 0.8; position: -1 2 1"></a-entity>
 
-      <!-- 1. Candi Borobudur -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-borobudur.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#borobudur-glb"
-          position="0 0 0" 
-          scale="0.5 0.5 0.5"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Candi Borobudur; text: Borobudur adalah candi Buddha terbesar di dunia yang dibangun pada abad ke-9 Masehi oleh Wangsa Syailendra di Magelang, Jawa Tengah."
-        >
-        </a-entity>
+      <!-- 1. Borobudur -->
+      <a-marker type="pattern" url="assets/markers/pattern-borobudur.patt" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+        <a-entity gltf-model="#borobudur-glb" position="0 0 0" scale="0.5 0.5 0.5" class="clickable" gesture-handler info-click-handler="title: Candi Borobudur; text: Candi Buddha terbesar di dunia, Magelang, Indonesia."></a-entity>
       </a-marker>
 
-      <!-- 2. Piramida Giza -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-pyramid.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#pyramid-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Piramida Agung Giza; text: Piramida tertua dan terbesar dari tiga piramida di Nekropolis Giza, Mesir. Dibangun sebagai makam untuk Firaun Khufu sekitar tahun 2560 SM."
-        >
-        </a-entity>
+      <!-- 2. Pyramid -->
+      <a-marker type="pattern" url="assets/markers/pattern-pyramid.patt" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+        <a-entity gltf-model="#pyramid-glb" position="0 0 0" scale="0.05 0.05 0.05" class="clickable" gesture-handler info-click-handler="title: Piramida Giza; text: Piramida tertua di Giza, Mesir. Makam Firaun Khufu."></a-entity>
       </a-marker>
 
       <!-- 3. Taj Mahal -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-taj-mahal.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#taj-mahal-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Taj Mahal; text: Sebuah mausoleum marmer putih di Agra, India. Dibangun oleh kaisar Mughal Shah Jahan untuk mengenang istri kesayangannya, Mumtaz Mahal."
-        >
-        </a-entity>
+      <a-marker type="pattern" url="assets/markers/pattern-taj-mahal.patt" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+        <a-entity gltf-model="#taj-mahal-glb" position="0 0 0" scale="0.05 0.05 0.05" class="clickable" gesture-handler info-click-handler="title: Taj Mahal; text: Mausoleum marmer putih di Agra, India. Simbol cinta abadi."></a-entity>
       </a-marker>
 
-      <!-- 4. Ad Deir (Petra) -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-ad_deir.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#ad-deir-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Ad Deir (The Monastery); text: Monumen monumental yang dipahat dari batu di kota kuno Petra, Yordania. Dibangun oleh bangsa Nabatean pada abad ke-1 Masehi."
-        >
-        </a-entity>
+      <!-- 4. Ad Deir -->
+      <a-marker type="pattern" url="assets/markers/pattern-ad_deir.patt" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+        <a-entity gltf-model="#ad-deir-glb" position="0 0 0" scale="0.05 0.05 0.05" class="clickable" gesture-handler info-click-handler="title: Ad Deir (Petra); text: Monumen The Monastery yang dipahat di batu, Petra, Yordania."></a-entity>
       </a-marker>
 
       <!-- 5. Angkor Wat -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-angkor_wat.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#angkor-wat-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Angkor Wat; text: Kompleks candi Hindu-Buddha terbesar di dunia yang terletak di Kamboja. Dibangun oleh Raja Suryavarman II pada awal abad ke-12."
-        >
-        </a-entity>
+      <a-marker type="pattern" url="assets/markers/pattern-angkor_wat.patt" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+        <a-entity gltf-model="#angkor-wat-glb" position="0 0 0" scale="0.05 0.05 0.05" class="clickable" gesture-handler info-click-handler="title: Angkor Wat; text: Kompleks candi Hindu-Buddha terbesar di dunia, Kamboja."></a-entity>
       </a-marker>
 
       <!-- 6. Chichen Itza -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-chichen_itza.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#chichen-itza-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Chichen Itza (El Castillo); text: Piramida Mesoamerika yang mendominasi pusat situs arkeologi Chichen Itza di negara bagian Yucatan, Meksiko."
-        >
-        </a-entity>
+      <a-marker type="pattern" url="assets/markers/pattern-chichen_itza.patt" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+        <a-entity gltf-model="#chichen-itza-glb" position="0 0 0" scale="0.05 0.05 0.05" class="clickable" gesture-handler info-click-handler="title: Chichen Itza; text: Piramida El Castillo peninggalan suku Maya di Meksiko."></a-entity>
       </a-marker>
 
-      <!-- 7. Khertvisi Fortress -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-khervitsi_fortress.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#khertvisi-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Benteng Khertvisi; text: Salah satu benteng tertua di Georgia, terletak di wilayah Meskheti selatan. Benteng ini sudah ada sejak abad ke-2 SM."
-        >
-        </a-entity>
+      <!-- 7. Khertvisi -->
+      <a-marker type="pattern" url="assets/markers/pattern-khervitsi_fortress.patt" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+        <a-entity gltf-model="#khertvisi-glb" position="0 0 0" scale="0.05 0.05 0.05" class="clickable" gesture-handler info-click-handler="title: Benteng Khertvisi; text: Salah satu benteng tertua di Georgia dari abad ke-2 SM."></a-entity>
       </a-marker>
 
-      <!-- 8. Menara Pisa -->
-      <a-marker 
-        type="pattern" 
-        url="assets/markers/pattern-tore_piza.patt"
-        emitevents="true"
-        smooth="true"
-        smoothCount="5"
-        smoothTolerance="0.01"
-        smoothThreshold="2"
-      >
-        <a-entity 
-          gltf-model="#torre-pisa-glb"
-          position="0 0 0" 
-          scale="0.05 0.05 0.05"
-          rotation="0 0 0"
-          class="clickable"
-          gesture-handler
-          info-click-handler="title: Menara Miring Pisa; text: Menara lonceng katedral di kota Pisa, Italia. Terkenal karena kemiringannya yang tidak disengaja akibat pondasi yang tidak stabil."
-        >
-        </a-entity>
+      <!-- 8. Pisa -->
+      <a-marker type="pattern" url="assets/markers/pattern-tore_piza.patt" emitevents="true" smooth="true" smoothCount="5" smoothTolerance="0.01" smoothThreshold="2">
+        <a-entity gltf-model="#torre-pisa-glb" position="0 0 0" scale="0.05 0.05 0.05" class="clickable" gesture-handler info-click-handler="title: Menara Pisa; text: Menara lonceng miring yang ikonik di Pisa, Italia."></a-entity>
       </a-marker>
 
       <a-entity camera></a-entity>
     </a-scene>
-
     <script>
-      document.querySelector('a-scene').addEventListener('loaded', function () {
-        document.querySelector('.arjs-loader').style.display = 'none';
-      });
+      document.querySelector('a-scene').addEventListener('loaded', function () { document.querySelector('.arjs-loader').style.display = 'none'; });
     </script>
   </body>
 </html>

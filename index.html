@@ -130,6 +130,11 @@
         <a-asset-item id="borobudur-glb" src="assets/models/borobudur.glb"></a-asset-item>
         <a-asset-item id="pyramid-glb" src="assets/models/pyramid.glb"></a-asset-item>
         <a-asset-item id="taj-mahal-glb" src="assets/models/taj_mahal.glb"></a-asset-item>
+        <a-asset-item id="ad-deir-glb" src="assets/models/ad-deir_monastery_petra_jordan.glb"></a-asset-item>
+        <a-asset-item id="angkor-wat-glb" src="assets/models/angkor_wat.glb"></a-asset-item>
+        <a-asset-item id="chichen-itza-glb" src="assets/models/chichen_itza_pyramid_3d_reconstruction.glb"></a-asset-item>
+        <a-asset-item id="khertvisi-glb" src="assets/models/khertvisi_fortress_-_raw_scan.glb"></a-asset-item>
+        <a-asset-item id="torre-pisa-glb" src="assets/models/torre_pisa.glb"></a-asset-item>
       </a-assets>
 
       <!-- Pencahayaan -->
@@ -198,6 +203,116 @@
           class="clickable"
           gesture-handler
           info-click-handler="title: Taj Mahal; text: Sebuah mausoleum marmer putih di Agra, India. Dibangun oleh kaisar Mughal Shah Jahan untuk mengenang istri kesayangannya, Mumtaz Mahal."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 4. Ad Deir (Petra) -->
+      <a-marker 
+        type="pattern" 
+        url="assets/markers/pattern-ad_deir.patt"
+        emitevents="true"
+        smooth="true"
+        smoothCount="5"
+        smoothTolerance="0.01"
+        smoothThreshold="2"
+      >
+        <a-entity 
+          gltf-model="#ad-deir-glb"
+          position="0 0 0" 
+          scale="0.05 0.05 0.05"
+          rotation="0 0 0"
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Ad Deir (The Monastery); text: Monumen monumental yang dipahat dari batu di kota kuno Petra, Yordania. Dibangun oleh bangsa Nabatean pada abad ke-1 Masehi."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 5. Angkor Wat -->
+      <a-marker 
+        type="pattern" 
+        url="assets/markers/pattern-angkor_wat.patt"
+        emitevents="true"
+        smooth="true"
+        smoothCount="5"
+        smoothTolerance="0.01"
+        smoothThreshold="2"
+      >
+        <a-entity 
+          gltf-model="#angkor-wat-glb"
+          position="0 0 0" 
+          scale="0.05 0.05 0.05"
+          rotation="0 0 0"
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Angkor Wat; text: Kompleks candi Hindu-Buddha terbesar di dunia yang terletak di Kamboja. Dibangun oleh Raja Suryavarman II pada awal abad ke-12."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 6. Chichen Itza -->
+      <a-marker 
+        type="pattern" 
+        url="assets/markers/pattern-chichen_itza.patt"
+        emitevents="true"
+        smooth="true"
+        smoothCount="5"
+        smoothTolerance="0.01"
+        smoothThreshold="2"
+      >
+        <a-entity 
+          gltf-model="#chichen-itza-glb"
+          position="0 0 0" 
+          scale="0.05 0.05 0.05"
+          rotation="0 0 0"
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Chichen Itza (El Castillo); text: Piramida Mesoamerika yang mendominasi pusat situs arkeologi Chichen Itza di negara bagian Yucatan, Meksiko."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 7. Khertvisi Fortress -->
+      <a-marker 
+        type="pattern" 
+        url="assets/markers/pattern-khervitsi_fortress.patt"
+        emitevents="true"
+        smooth="true"
+        smoothCount="5"
+        smoothTolerance="0.01"
+        smoothThreshold="2"
+      >
+        <a-entity 
+          gltf-model="#khertvisi-glb"
+          position="0 0 0" 
+          scale="0.05 0.05 0.05"
+          rotation="0 0 0"
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Benteng Khertvisi; text: Salah satu benteng tertua di Georgia, terletak di wilayah Meskheti selatan. Benteng ini sudah ada sejak abad ke-2 SM."
+        >
+        </a-entity>
+      </a-marker>
+
+      <!-- 8. Menara Pisa -->
+      <a-marker 
+        type="pattern" 
+        url="assets/markers/pattern-tore_piza.patt"
+        emitevents="true"
+        smooth="true"
+        smoothCount="5"
+        smoothTolerance="0.01"
+        smoothThreshold="2"
+      >
+        <a-entity 
+          gltf-model="#torre-pisa-glb"
+          position="0 0 0" 
+          scale="0.05 0.05 0.05"
+          rotation="0 0 0"
+          class="clickable"
+          gesture-handler
+          info-click-handler="title: Menara Miring Pisa; text: Menara lonceng katedral di kota Pisa, Italia. Terkenal karena kemiringannya yang tidak disengaja akibat pondasi yang tidak stabil."
         >
         </a-entity>
       </a-marker>
